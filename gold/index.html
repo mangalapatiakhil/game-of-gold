@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game of Gold - Compare Gold Prices & Book Online</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#d4af37',
+                        secondary: '#8a6d3b'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        'DEFAULT': '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+    <style>
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .custom-checkbox {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #d4af37;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            background-color: white;
+        }
+
+        .custom-checkbox:checked {
+            background-color: #d4af37;
+        }
+
+        .custom-checkbox:checked::after {
+            content: '';
+            position: absolute;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            top: 1px;
+            left: 5px;
+            transform: rotate(45deg);
+        }
+
+        .custom-radio {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #d4af37;
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+            background-color: white;
+        }
+
+        .custom-radio:checked {
+            border-color: #d4af37;
+        }
+
+        .custom-radio:checked::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #d4af37;
+            top: 2px;
+            left: 2px;
+        }
+
+        .custom-switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+        }
+
+        .custom-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #d4af37;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        .custom-range {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .custom-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #d4af37;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .custom-range::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #d4af37;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .gold-gradient {
+            background: linear-gradient(135deg, #f6e27a 0%, #d4af37 50%, #a67c00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            min-width: 200px;
+            z-index: 50;
+            background-color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <img src="" alt="">
+                    <a href="#home" class="text-3xl font-['Pacifico'] text-primary">Game of Gold</a>
+                </div>
+                <!-- Today's Gold Rate -->
+                <div class="hidden md:flex items-center bg-yellow-50 px-4 py-2 rounded-lg border border-yellow-200">
+                    <div class="text-sm font-medium text-gray-600">Today's Gold Rate:</div>
+                    <div class="ml-2 text-lg font-bold gold-gradient">24k Gold/g [10,091/-]</div>
+                    <div class="ml-2 text-xs font-medium text-green-600 flex items-center">
+                        <i class="ri-arrow-up-line ri-sm"></i> +1.2%
+                    </div>
+                </div>
+                <!-- Search Bar -->
+                <div class="hidden md:flex flex-1 max-w-xl mx-6">
+                    <div class="relative w-full">
+                        <input type="text" placeholder="Search for shops, jewelry items..." class="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <i class="ri-search-line text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4">
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-1 text-gray-700 hover:text-primary">
+                            <div class="w-8 h-8 flex items-center justify-center">
+                                <i class="ri-user-line"></i>
+                            </div>
+                            <span class="hidden md:inline text-sm font-medium">Account</span>
+                            <i class="ri-arrow-down-s-line"></i>
+                        </button>
+                        <div class="dropdown-content right-0 mt-2">
+                            <div class="py-3 px-4 bg-gray-50 border-b border-gray-100">
+                                <p class="text-sm font-medium text-gray-900">Welcome!</p>
+                                <p class="text-xs text-gray-500">Access your account</p>
+                            </div>
+                            <div class="py-2">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign In</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Register</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Bookings</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Wishlist</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <a href="#" class="flex items-center text-gray-700 hover:text-primary">
+                            <div class="w-8 h-8 flex items-center justify-center">
+                                <i class="ri-shopping-cart-line"></i>
+                            </div>
+                            <span class="hidden md:inline text-sm font-medium">Cart</span>
+                        </a>
+                        <div class="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                            <span class="text-white text-xs font-bold">3</span>
+                        </div>
+                    </div>
+                    <button class="md:hidden w-8 h-8 flex items-center justify-center text-gray-700">
+                        <i class="ri-menu-line text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Mobile Search -->
+            <div class="mt-3 md:hidden">
+                <div class="relative">
+                    <input type="text" placeholder="Search..." class="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3">
+                        <i class="ri-search-line text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-12">
+                <div class="hidden md:flex items-center space-x-8">
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-1 h-12 px-2 text-gray-700 hover:text-primary border-b-2 border-transparent hover:border-primary">
+                            <a href="#categories"><span class="text-sm font-medium">Categories</span></a>
+                            <i class="ri-arrow-down-s-line"></i>
+                        </button>
+                        <div class="dropdown-content left-0 mt-0">
+                            <div class="grid grid-cols-2 gap-4 p-4">
+                                <a href="#rings" class="flex items-center p-2 rounded hover:bg-gray-50">
+                                    <div class="w-8 h-8 flex items-center justify-center text-primary">
+                                        <i class="ri-ring-line"></i>
+                                    </div>
+                                    <span class="ml-2 text-sm">Rings</span>
+                                </a>
+                                <a href="#chains" class="flex items-center p-2 rounded hover:bg-gray-50">
+                                    <div class="w-8 h-8 flex items-center justify-center text-primary">
+                                        <i class="ri-link-m"></i>
+                                    </div>
+                                    <span class="ml-2 text-sm">Chains</span>
+                                </a>
+                                <a href="#earrings" class="flex items-center p-2 rounded hover:bg-gray-50">
+                                    <div class="w-8 h-8 flex items-center justify-center text-primary">
+                                        <i class="ri-vip-diamond-line"></i>
+                                    </div>
+                                    <span class="ml-2 text-sm">Earrings</span>
+                                </a>
+                                <a href="#bracelets" class="flex items-center p-2 rounded hover:bg-gray-50">
+                                    <div class="w-8 h-8 flex items-center justify-center text-primary">
+                                        <i class="ri-hand-heart-line"></i>
+                                    </div>
+                                    <span class="ml-2 text-sm">Bracelets</span>
+                                </a>
+                                <a href="#anklets" class="flex items-center p-2 rounded hover:bg-gray-50">
+                                    <div class="w-8 h-8 flex items-center justify-center text-primary">
+                                        <i class="ri-footprint-line"></i>
+                                    </div>
+                                    <span class="ml-2 text-sm">Anklets</span>
+                                </a>
+                                <a href="#gift-sets" class="flex items-center p-2 rounded hover:bg-gray-50">
+                                    <div class="w-8 h-8 flex items-center justify-center text-primary">
+                                        <i class="ri-gift-line"></i>
+                                    </div>
+                                    <span class="ml-2 text-sm">Gift Sets</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative dropdown">
+                        <button class="flex items-center space-x-1 h-12 px-2 text-gray-700 hover:text-primary border-b-2 border-transparent hover:border-primary">
+                            <a href="#shops"><span class="text-sm font-medium">Shops</span></a>
+                            <i class="ri-arrow-down-s-line"></i>
+                        </button>
+                        <div class="dropdown-content left-0 mt-0">
+                            <div class="py-2">
+                                <a href="#premium-jewelers" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Premium Jewelers</a>
+                                <a href="#medium-retailers" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Medium Retailers</a>
+                                <a href="#small-local-shops" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Small Local Shops</a>
+                                <a href="#all-shops" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">All Shops</a>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#price-trends" class="flex items-center h-12 px-2 text-gray-700 hover:text-primary border-b-2 border-transparent hover:border-primary">
+                        <span class="text-sm font-medium">Price Trends</span>
+                    </a>
+                    <a href="#offers" class="flex items-center h-12 px-2 text-gray-700 hover:text-primary border-b-2 border-transparent hover:border-primary">
+                        <span class="text-sm font-medium">Offers</span>
+                    </a>
+                </div>
+                <div class="md:hidden text-sm font-medium text-gray-600">
+                    Today's Rate: <span class="font-bold text-primary"> 24k/G [10,091/-]</span>
+                </div>
+                <a href="#" class="hidden md:flex items-center space-x-1 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-button text-sm font-medium transition-colors">
+                    <i class="ri-store-line"></i>
+                    <span>Find Nearby Shops</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative bg-cover bg-center py-16" style="background-image: url('https://readdy.ai/api/search-image?query=luxury%20gold%20jewelry%20display%20with%20elegant%20lighting%2C%20soft%20focus%20background%20with%20gold%20coins%20and%20bars%2C%20professional%20high-end%20jewelry%20store%20display%20with%20warm%20lighting%2C%20gold%20texture%20visible%2C%20premium%20quality%20photography%2C%20ultra-detailed&width=1920&height=600&seq=1&orientation=landscape')">
+        <div class="absolute inset-0 bg-black/40"></div>
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-2xl">
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Find the Best Gold Prices in Your City</h1>
+                <p class="text-xl text-white/90 mb-8">Compare prices, book appointments, and get the best deals on gold jewelry from shops near you.</p>
+                <div class="bg-white p-4 rounded-lg shadow-lg">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">I'm looking for</label>
+                            <select class="w-full border-gray-300 rounded-button py-2 px-3 text-gray-700 bg-white border focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent pr-8">
+                                <option>All Jewelry</option>
+                                <option>Rings</option>
+                                <option>Chains</option>
+                                <option>Earrings</option>
+                                <option>Bracelets</option>
+                                <option>Anklets</option>
+                            </select>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                            <input type="text" placeholder="Enter your city" class="w-full border-gray-300 rounded-button py-2 px-3 text-gray-700 bg-white border focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
+                            <select class="w-full border-gray-300 rounded-button py-2 px-3 text-gray-700 bg-white border focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent pr-8">
+                                <option>All Prices</option>
+                                <option>Under 7000</option>
+                                <option>8,000 - 9,000</option>
+                                <option>9,000 - $10,500</option>
+                                <option>11,000</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button class="w-full bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-button text-sm font-medium transition-colors whitespace-nowrap">
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="categories" class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Categories</h2>
+            <p class="text-gray-600 mb-8">Browse through our extensive collection of gold jewelry categories.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=luxury%20gold%20rings%20display%2C%20elegant%20lighting%2C%20high-end%20jewelry%20shop%20with%20glass%20cases%20showing%20gold%20rings%2C%20professional%20retail%20space%2C%20warm%20golden%20lighting%2C%20modern%20luxury%20retail%20design&width=600&height=400&seq=2&orientation=landscape" alt="Rings" class="w-full h-full object-cover object-top">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Rings</h3>
+                        <p class="text-gray-600 text-sm mb-4">Explore our collection of elegant gold rings.</p>
+                        <a href="#rings" class="text-primary text-sm font-medium hover:underline">View Rings</a>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=luxury%20gold%20chains%20display%2C%20elegant%20lighting%2C%20high-end%20jewelry%20shop%20with%20glass%20cases%20showing%20gold%20chains%2C%20professional%20retail%20space%2C%20warm%20golden%20lighting%2C%20modern%20luxury%20retail%20design&width=600&height=400&seq=3&orientation=landscape" alt="Chains" class="w-full h-full object-cover object-top">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Chains</h3>
+                        <p class="text-gray-600 text-sm mb-4">Discover our range of beautiful gold chains.</p>
+                        <a href="#chains" class="text-primary text-sm font-medium hover:underline">View Chains</a>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=luxury%20gold%20earrings%20display%2C%20elegant%20lighting%2C%20high-end%20jewelry%20shop%20with%20glass%20cases%20showing%20gold%20earrings%2C%20professional%20retail%20space%2C%20warm%20golden%20lighting%2C%20modern%20luxury%20retail%20design&width=600&height=400&seq=4&orientation=landscape" alt="Earrings" class="w-full h-full object-cover object-top">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Earrings</h3>
+                        <p class="text-gray-600 text-sm mb-4">Browse our selection of stunning gold earrings.</p>
+                        <a href="#earrings" class="text-primary text-sm font-medium hover:underline">View Earrings</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shops Section -->
+    <section id="shops" class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Featured Jewelry Shops</h2>
+            <p class="text-gray-600 mb-8">Discover top-rated gold shops with the best prices and offers.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=luxury%20jewelry%20store%20interior%20with%20gold%20displays%2C%20elegant%20lighting%2C%20high-end%20jewelry%20shop%20with%20glass%20cases%20showing%20gold%20jewelry%2C%20professional%20retail%20space%2C%20warm%20golden%20lighting%2C%20modern%20luxury%20retail%20design&width=600&height=400&seq=2&orientation=landscape" alt="Elegant Gold Emporium" class="w-full h-full object-cover object-top">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-lg font-bold text-gray-900">Elegant Gold Emporium</h3>
+                            <div class="flex items-center">
+                                <div class="text-yellow-400 flex">
+                                    <i class="ri-star-fill"></i>
+                                    <i class="ri-star-fill"></i>
+                                    <i class="ri-star-fill"></i>
+                                    <i class="ri-star-fill"></i>
+                                    <i class="ri-star-half-fill"></i>
+                                </div>
+                                <span class="ml-1 text-sm text-gray-600">4.7</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">Premium jewelry store with exclusive designs and competitive prices.</p>
+                        <div class="flex items-center text-sm text-gray-500 mb-4">
+                            <i class="ri-map-pin-line"></i>
+                            <span class="ml-1">123 Luxury Ave, Golden Heights</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <span class="px-2 py-1 bg-green-50 text-green-700 text-xs font-medium rounded">Premium</span>
+                                <span class="ml-2 px-2 py-1 bg-red-50 text-red-700 text-xs font-medium rounded">10% Off</span>
+                            </div>
+                            <a href="#elegant-gold-emporium" class="text-primary text-sm font-medium hover:underline">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=mid-range%20jewelry%20store%20with%20friendly%20atmosphere%2C%20casual%20gold%20jewelry%20shop%20with%20display%20cases%2C%20warm%20lighting%2C%20family-owned%20jewelry%20business%2C%20comfortable%20shopping%20environment%2C%20gold%20items%20on%20display&width=600&height=400&seq=3&orientation=landscape" alt="Golden Treasures" class="w-full h-full object-cover object-top">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-lg font-bold text-gray-900">Golden Treasures</h3>
+                            <div class="flex items-center">
+                                <div class="text-yellow-400 flex">
+                                    <i class="ri-star-fill"></i>
+                                    <i class="ri-star-fill"></i>
+                                    <i class="ri-star-fill"></i>
+                                    <i class="ri-star-fill"></i>
+                                    <i class="ri-star-line"></i>
+                                </div>
+                                <span class="ml-1 text-sm text-gray-600">4.2</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">Family-owned shop with affordable gold jewelry for every occasion.</p>
+                        <div class="flex items-center text-sm text-gray-500 mb-4">
+                            <i class="ri-map-pin-line"></i>
+                            <span class="ml-1">456 Market St, Goldsmith District</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded">Medium</span>
+                                <span class="ml-2 px-2 py-1 bg-red-50 text-red-700 text-xs font-medium rounded">Free Delivery</span>
+                            </div>
+                            <a href="#golden-treasures" class="text-primary text-sm font-medium hover:underline">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=small%20local%20gold%20jewelry%20shop%2C%20simple%20display%20cases%20with%20gold%20items%2C%20modest%20jewelry%20store%20interior%2C%20affordable%20gold%20jewelry%20shop%2C%20simple%20lighting%2C%20neighborhood%20jewelry%20store%20with%20basic%20displays&width=600&height=400&seq=4&orientation=landscape" alt="Sunshine Gold Shop" class="w-full h-full object-cover object-top">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-lg font-bold text-gray-900">Sunshine Gold Shop</h3>
+                            <div class="flex items-center">
+                                <div class="text-yellow-400 flex">
+                                    <i class="ri-star-fill"></i>
+                                    <i class="ri-star-fill"></i>
+                                    <i class="ri-star-fill"></i>
+                                    <i class="ri-star-half-fill"></i>
+                                    <i class="ri-star-line"></i>
+                                </div>
+                                <span class="ml-1 text-sm text-gray-600">3.7</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">Local shop offering budget-friendly gold jewelry with personalized service.</p>
+                        <div class="flex items-center text-sm text-gray-500 mb-4">
+                            <i class="ri-map-pin-line"></i>
+                            <span class="ml-1">789 Community Rd, Gold Town</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <span class="px-2 py-1 bg-yellow-50 text-yellow-700 text-xs font-medium rounded">Small</span>
+                                <span class="ml-2 px-2 py-1 bg-red-50 text-red-700 text-xs font-medium rounded">5% Off</span>
+                            </div>
+                            <a href="#sunshine-gold-shop" class="text-primary text-sm font-medium hover:underline">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Price Trends Section -->
+    <section id="price-trends" class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Gold Price Trends</h2>
+            <p class="text-gray-600 mb-8">Track daily gold rates to make informed buying decisions.</p>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-4 h-80">
+                <div id="goldRateChart" class="w-full h-full"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Offers Section -->
+    <section id="offers" class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Exclusive Offers</h2>
+            <p class="text-gray-600 mb-8">Discover our latest offers and discounts on gold jewelry.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=gold%20jewelry%20offer%20banner%2C%20discount%20on%20gold%20rings%2C%20special%20offer%20on%20gold%20jewelry%2C%20gold%20jewelry%20sale%2C%20discount%20banner%20for%20gold%20jewelry&width=600&height=400&seq=5&orientation=landscape" alt="Special Offer on Rings" class="w-full h-full object-cover object-top">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Special Offer on Rings</h3>
+                        <p class="text-gray-600 text-sm mb-4">Get a 15% discount on all gold rings this week only.</p>
+                        <a href="#ring-offers" class="text-primary text-sm font-medium hover:underline">View Offer</a>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=gold%20jewelry%20offer%20banner%2C%20discount%20on%20gold%20chains%2C%20special%20offer%20on%20gold%20jewelry%2C%20gold%20jewelry%20sale%2C%20discount%20banner%20for%20gold%20jewelry&width=600&height=400&seq=6&orientation=landscape" alt="Special Offer on Chains" class="w-full h-full object-cover object-top">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Special Offer on Chains</h3>
+                        <p class="text-gray-600 text-sm mb-4">Get a 10% discount on all gold chains this week only.</p>
+                        <a href="#chain-offers" class="text-primary text-sm font-medium hover:underline">View Offer</a>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://readdy.ai/api/search-image?query=gold%20jewelry%20offer%20banner%2C%20discount%20on%20gold%20earrings%2C%20special%20offer%20on%20gold%20jewelry%2C%20gold%20jewelry%20sale%2C%20discount%20banner%20for%20gold%20jewelry&width=600&height=400&seq=7&orientation=landscape" alt="Special Offer on Earrings" class="w-full h-full object-cover object-top">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Special Offer on Earrings</h3>
+                        <p class="text-gray-600 text-sm mb-4">Get a 20% discount on all gold earrings this week only.</p>
+                        <a href="#earring-offers" class="text-primary text-sm font-medium hover:underline">View Offer</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-12 pb-6">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <a href="#home" class="text-3xl font-['Pacifico'] text-primary mb-4 inline-block">Game of Gold</a>
+                    <p class="text-gray-400 mb-4">Compare gold prices, book appointments, and get the best deals on gold jewelry from shops near you.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="ri-facebook-fill"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="ri-twitter-fill"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="ri-instagram-fill"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="ri-linkedin-fill"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#price-trends" class="text-gray-400 hover:text-white">Gold Rate Today</a></li>
+                        <li><a href="#shops" class="text-gray-400 hover:text-white">Shop Directory</a></li>
+                        <li><a href="#categories" class="text-gray-400 hover:text-white">Compare Prices</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Book Appointment</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Categories</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#rings" class="text-gray-400 hover:text-white">Gold Rings</a></li>
+                        <li><a href="#chains" class="text-gray-400 hover:text-white">Gold Chains</a></li>
+                        <li><a href="#earrings" class="text-gray-400 hover:text-white">Gold Earrings</a></li>
+                        <li><a href="#bracelets" class="text-gray-400 hover:text-white">Gold Bracelets</a></li>
+                        <li><a href="#anklets" class="text-gray-400 hover:text-white">Gold Anklets</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Contact Us</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="ri-map-pin-line mt-1 mr-2"></i>
+                            <span class="text-gray-400"> Gold Street,rajahmundry, east godavari  District, Andhra pradesh</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="ri-phone-line mr-2"></i>
+                            <span class="text-gray-400">7680906589</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="ri-mail-line mr-2"></i>
+                            <span class="text-gray-400">akhil1@gmail.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="ri-time-line mr-2"></i>
+                            <span class="text-gray-400">Mon-Sat: 9:00 AM - 8:00 PM</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-6">
+                <div class="flex flex-col md:flex-row md:justify-between items-center">
+                    <p class="text-gray-400 text-sm mb-4 md:mb-0">© 2025 Game of Gold. All rights reserved.</p>
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <a href="#" class="text-gray-400 hover:text-white text-sm">Privacy Policy</a>
+                        <a href="#" class="text-gray-400 hover:text-white text-sm">Terms of Service</a>
+                        <a href="#" class="text-gray-400 hover:text-white text-sm">Cookie Policy</a>
+                        <a href="#" class="text-gray-400 hover:text-white text-sm">FAQ</a>
+                    </div>
+                    <div class="mt-4 md:mt-0 flex items-center space-x-3">
+                        <span class="text-gray-400 text-sm">Payment Methods:</span>
+                        <i class="ri-visa-fill text-gray-400"></i>
+                        <i class="ri-mastercard-fill text-gray-400"></i>
+                        <i class="ri-paypal-fill text-gray-400"></i>
+                        <i class="ri-amazon-pay-fill text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuButton = document.querySelector('button.md\\:hidden');
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', function() {
+                    // Implement mobile menu toggle functionality
+                    console.log('Mobile menu clicked');
+                });
+            }
+
+            // Product category tabs
+            const categoryButtons = document.querySelectorAll('.bg-gray-100.rounded-full button');
+            if (categoryButtons.length > 0) {
+                categoryButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        // Remove active class from all buttons
+                        categoryButtons.forEach(btn => {
+                            btn.classList.remove('bg-primary', 'text-white');
+                            btn.classList.add('text-gray-700', 'hover:bg-gray-200');
+                        });
+                        // Add active class to clicked button
+                        this.classList.remove('text-gray-700', 'hover:bg-gray-200');
+                        this.classList.add('bg-primary', 'text-white');
+                    });
+                });
+            }
+
+            // Gold Rate Chart
+            const goldRateChart = document.getElementById('goldRateChart');
+            if (goldRateChart) {
+                const chart = echarts.init(goldRateChart);
+                const option = {
+                    animation: false,
+                    tooltip: {
+                        trigger: 'axis',
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        borderColor: '#e5e7eb',
+                        borderWidth: 1,
+                        textStyle: {
+                            color: '#1f2937'
+                        }
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '3%',
+                        bottom: '3%',
+                        top: '3%',
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: ['Jun 11', 'Jun 12', 'Jun 13', 'Jun 14', 'Jun 15', 'Jun 16', 'Jun 17', 'Jun 18'],
+                        axisLine: {
+                            lineStyle: {
+                                color: '#e5e7eb'
+                            }
+                        },
+                        axisLabel: {
+                            color: '#1f2937'
+                        }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        axisLine: {
+                            show: false
+                        },
+                        axisLabel: {
+                            color: '#1f2937',
+                            formatter: '${value}'
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: '#e5e7eb'
+                            }
+                        }
+                    },
+                    series: [
+                        {
+                            name: '24K Gold',
+                            type: 'line',
+                            smooth: true,
+                            symbol: 'none',
+                            lineStyle: {
+                                width: 3,
+                                color: 'rgba(87, 181, 231, 1)'
+                            },
+                            areaStyle: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    {
+                                        offset: 0,
+                                        color: 'rgba(87, 181, 231, 0.2)'
+                                    },
+                                    {
+                                        offset: 1,
+                                        color: 'rgba(87, 181, 231, 0)'
+                                    }
+                                ])
+                            },
+                            data: [2310.25, 2318.45, 2325.10, 2319.75, 2328.30, 2335.65, 2342.50, 2347.80]
+                        },
+                        {
+                            name: '22K Gold',
+                            type: 'line',
+                            smooth: true,
+                            symbol: 'none',
+                            lineStyle: {
+                                width: 3,
+                                color: 'rgba(141, 211, 199, 1)'
+                            },
+                            areaStyle: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    {
+                                        offset: 0,
+                                        color: 'rgba(141, 211, 199, 0.2)'
+                                    },
+                                    {
+                                        offset: 1,
+                                        color: 'rgba(141, 211, 199, 0)'
+                                    }
+                                ])
+                            },
+                            data: [2117.73, 2125.25, 2131.35, 2126.43, 2134.27, 2141.01, 2147.29, 2152.15]
+                        }
+                    ]
+                };
+                chart.setOption(option);
+                window.addEventListener('resize', function() {
+                    chart.resize();
+                });
+            }
+
+            // Booking Form
+            const bookingForm = document.querySelector('form');
+            if (bookingForm) {
+                bookingForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    // Form validation logic would go here
+                    const termsCheckbox = document.getElementById('terms');
+                    if (!termsCheckbox.checked) {
+                        alert('Please agree to the Terms and Conditions');
+                        return;
+                    }
+                    // Form submission logic would go here
+                    alert('Booking request submitted successfully!');
+                    bookingForm.reset();
+                });
+            }
+
+            // Delivery option toggle
+            const deliveryOptions = document.querySelectorAll('input[name="delivery"]');
+            if (deliveryOptions.length > 0) {
+                deliveryOptions[0].checked = true; // Default to pickup
+            }
+
+            // Wishlist
+            const wishlistButtons = document.querySelectorAll('.ri-heart-line');
+            if (wishlistButtons.length > 0) {
+                wishlistButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        // Toggle heart icon
+                        if (this.classList.contains('ri-heart-line')) {
+                            this.classList.remove('ri-heart-line');
+                            this.classList.add('ri-heart-fill');
+                            this.parentElement.classList.add('text-primary');
+                        } else {
+                            this.classList.remove('ri-heart-fill');
+                            this.classList.add('ri-heart-line');
+                            this.parentElement.classList.remove('text-primary');
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
