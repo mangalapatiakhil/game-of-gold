@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golden Treasures - My Wishlist</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700);
+            border-radius: 2px;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.7; transform: translateX(-50%) scaleX(1); }
+            50% { opacity: 1; transform: translateX(-50%) scaleX(1.2); }
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #ffc107, #ff8f00);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: goldGradient 3s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            margin-bottom: 10px;
+        }
+
+        @keyframes goldGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #b8860b;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .wishlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .wishlist-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .wishlist-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .wishlist-item:hover::before {
+            left: 100%;
+        }
+
+        .wishlist-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.5);
+        }
+
+        .item-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .item-image::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(45deg) translateX(-200%); }
+            100% { transform: rotate(45deg) translateX(200%); }
+        }
+
+        .item-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .item-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffed4e;
+            margin-bottom: 15px;
+        }
+
+        .item-description {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #1a1a2e;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #ffed4e, #ffd700);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 215, 0, 0.1);
+            color: #ffd700;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.6);
+        }
+
+        .priority-high {
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .priority-medium {
+            border-left: 4px solid #ffd700;
+        }
+
+        .priority-low {
+            border-left: 4px solid #51cf66;
+        }
+
+        .priority-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .priority-high .priority-badge {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+        }
+
+        .priority-medium .priority-badge {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+        }
+
+        .priority-low .priority-badge {
+            background: rgba(81, 207, 102, 0.2);
+            color: #51cf66;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .stat-card {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: #ffd700;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            50% { transform: translateY(-100px) rotate(180deg); opacity: 0.8; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-200px) rotate(360deg); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .title { font-size: 2.5rem; }
+            .wishlist-grid { grid-template-columns: 1fr; }
+            .container { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-particles"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Golden Treasures</h1>
+            <p class="subtitle">My Precious Wishlist</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value">8</div>
+                <div class="stat-label">Total Items</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">₹2,45,000</div>
+                <div class="stat-label">Total Value</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-label">High Priority</div>
+            </div>
+        </div>
+
+        <div class="wishlist-grid">
+            <div class="wishlist-item priority-high">
+                <div class="priority-badge">High Priority</div>
+                <div class="item-image">💍</div>
+                <div class="item-title">Diamond Gold Ring</div>
+                <div class="item-price">₹85,000</div>
+                <div class="item-description">Exquisite 18k gold ring adorned with brilliant cut diamonds. A timeless piece perfect for special occasions.</div>
+                <div class="item-actions">
+                    <button class="btn btn-primary">Add to Cart</button>
+                    <button class="btn btn-secondary">♥ Save</button>
+                </div>
+            </div>
+
+            <div class="wishlist-item priority-medium">
+                <div class="priority-badge">Medium Priority</div>
+                <div class="item-image">📿</div>
+                <div class="item-title">Gold Chain Necklace</div>
+                <div class="item-price">₹35,000</div>
+                <div class="item-description">Elegant 22k gold chain with intricate design work. Perfect for daily wear and special events.</div>
+                <div class="item-actions">
+                    <button class="btn btn-primary">Add to Cart</button>
+                    <button class="btn btn-secondary">♥ Save</button>
+                </div>
+            </div>
+
+            <div class="wishlist-item priority-high">
+                <div class="priority-badge">High Priority</div>
+                <div class="item-image">👂</div>
+                <div class="item-title">Pearl Gold Earrings</div>
+                <div class="item-price">₹25,500</div>
+                <div class="item-description">Beautiful gold earrings with lustrous pearls. Sophisticated design that complements any outfit.</div>
+                <div class="item-actions">
+                    <button class="btn btn-primary">Add to Cart</button>
+                    <button class="btn btn-secondary">♥ Save</button>
+                </div>
+            </div>
+
+            <div class="wishlist-item priority-low">
+                <div class="priority-badge">Low Priority</div>
+                <div class="item-image">⌚</div>
+                <div class="item-title">Luxury Gold Watch</div>
+                <div class="item-price">₹1,20,000</div>
+                <div class="item-description">Premium gold-plated luxury watch with precision movement and elegant design.</div>
+                <div class="item-actions">
+                    <button class="btn btn-primary">Add to Cart</button>
+                    <button class="btn btn-secondary">♥ Save</button>
+                </div>
+            </div>
+
+            <div class="wishlist-item priority-medium">
+                <div class="priority-badge">Medium Priority</div>
+                <div class="item-image">🔗</div>
+                <div class="item-title">Gold Bracelet</div>
+                <div class="item-price">₹18,000</div>
+                <div class="item-description">Delicate gold bracelet with modern styling. Perfect accessory for both casual and formal occasions.</div>
+                <div class="item-actions">
+                    <button class="btn btn-primary">Add to Cart</button>
+                    <button class="btn btn-secondary">♥ Save</button>
+                </div>
+            </div>
+
+            <div class="wishlist-item priority-high">
+                <div class="priority-badge">High Priority</div>
+                <div class="item-image">🏆</div>
+                <div class="item-title">Gold Pendant Set</div>
+                <div class="item-price">₹42,000</div>
+                <div class="item-description">Stunning gold pendant set with matching earrings. Traditional design with contemporary appeal.</div>
+                <div class="item-actions">
+                    <button class="btn btn-primary">Add to Cart</button>
+                    <button class="btn btn-secondary">♥ Save</button>
+                </div>
+            </div>
+
+            <div class="wishlist-item priority-low">
+                <div class="priority-badge">Low Priority</div>
+                <div class="item-image">💎</div>
+                <div class="item-title">Gold Bangles Set</div>
+                <div class="item-price">₹55,000</div>
+                <div class="item-description">Set of 4 traditional gold bangles with intricate patterns. Handcrafted by skilled artisans.</div>
+                <div class="item-actions">
+                    <button class="btn btn-primary">Add to Cart</button>
+                    <button class="btn btn-secondary">♥ Save</button>
+                </div>
+            </div>
+
+            <div class="wishlist-item priority-medium">
+                <div class="priority-badge">Medium Priority</div>
+                <div class="item-image">👑</div>
+                <div class="item-title">Gold Tiara</div>
+                <div class="item-price">₹75,000</div>
+                <div class="item-description">Regal gold tiara with precious stones. Perfect for weddings and special celebrations.</div>
+                <div class="item-actions">
+                    <button class="btn btn-primary">Add to Cart</button>
+                    <button class="btn btn-secondary">♥ Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const container = document.querySelector('.floating-particles');
+            const particleCount = 20;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const size = Math.random() * 4 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                
+                container.appendChild(particle);
+            }
+        }
+
+        // Add click effects to wishlist items
+        function addItemEffects() {
+            const items = document.querySelectorAll('.wishlist-item');
+            items.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    if (!e.target.matches('.btn')) {
+                        this.style.transform = 'scale(0.98)';
+                        setTimeout(() => {
+                            this.style.transform = '';
+                        }, 150);
+                    }
+                });
+            });
+        }
+
+        // Add button click effects
+        function addButtonEffects() {
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // Create ripple effect
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.style.position = 'absolute';
+                    ripple.style.borderRadius = '50%';
+                    ripple.style.background = 'rgba(255, 255, 255, 0.3)';
+                    ripple.style.transform = 'scale(0)';
+                    ripple.style.animation = 'ripple 0.6s linear';
+                    ripple.style.pointerEvents = 'none';
+                    
+                    this.style.position = 'relative';
+                    this.style.overflow = 'hidden';
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+
+                    // Button-specific actions
+                    if (this.textContent.includes('Add to Cart')) {
+                        this.textContent = '✓ Added!';
+                        this.style.background = 'linear-gradient(45deg, #51cf66, #69db7c)';
+                        setTimeout(() => {
+                            this.textContent = 'Add to Cart';
+                            this.style.background = '';
+                        }, 2000);
+                    } else if (this.textContent.includes('Save')) {
+                        this.innerHTML = this.innerHTML.includes('♥') ? '💖 Saved' : '♥ Save';
+                    }
+                });
+            });
+        }
+
+        // Add CSS for ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize effects when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            addItemEffects();
+            addButtonEffects();
+        });
+
+        // Add smooth scrolling and parallax effect
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const parallax = document.querySelector('.header');
+            const speed = 0.5;
+            parallax.style.transform = `translateY(${scrolled * speed}px)`;
+        });
+    </script>
+</body>
+</html>

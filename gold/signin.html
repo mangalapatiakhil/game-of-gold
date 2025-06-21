@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In</title>
+    <link rel="stylesheet" href="signin.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <div class="container">
+        <div class="logo">
+            <h1>Welcome</h1>
+            <p class="subtitle">Sign in to your account</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+
+        <form id="signinForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <span class="password-toggle" onclick="togglePassword()">👁️</span>
+            </div>
+
+            <div class="remember-forgot">
+                <div class="remember">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Remember me</label>
+                </div>
+                <a href="#" class="forgot-link">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="signin-btn" id="signinBtn">
+                <div class="loading-spinner" id="loadingSpinner"></div>
+                <span id="btnText">Sign In</span>
+            </button>
+        </form>
+
+        <div class="divider">
+            <span>or continue with</span>
+        </div>
+
+        <div class="social-signin">
+            <button type="button" class="social-btn" onclick="socialSignin('google')">
+                <span>🔍</span>
+                Google
+            </button>
+            <button type="button" class="social-btn" onclick="socialSignin('github')">
+                <span>🐙</span>
+                GitHub
+            </button>
+        </div>
+
+        <div class="signup-link">
+            Don't have an account? <a href="#">Sign up here</a>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
